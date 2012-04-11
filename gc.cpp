@@ -13,7 +13,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	GraphFileParser parser;
-	AdjacencyList* adjLists = parser.parse_infile(argv[2]);
+	AdjacencyList* adjLists = parser.parse_infile(argv[2], atoi(argv[1]));
 
 	return 0;
 }

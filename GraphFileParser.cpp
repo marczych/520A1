@@ -10,10 +10,17 @@
 
 using namespace std;
 
-AdjacencyList* GraphFileParser::parse_infile(char* fileName)
+/*
+* Reads the input file and returns an AdjacencyList array, where element x
+* corresponds to the graph labeled x+1 in the input file.
+*
+* NOTE: The AdjacencyList array is heap-allocated, so the caller must free
+* its memory when it is no longer needed.
+*/
+AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 {
 	bool firstNewGraph = true;
-	vector<string> lines;
+	vector<string> lines;		// stores the lines for a single graph from the input file.
 	ifstream inFile;
 	string line;
 
@@ -38,7 +45,7 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName)
 					cout << "Processing graph " << graphNum << endl;
 
 					int listLength;
-					GraphNode* adjList = process_lines(lines, listLength);
+					GraphNode* adjList = process_lines(lines, listLength, k);
 
 					adjLists[graphNum].setAdjList(adjList, listLength);
 
@@ -67,31 +74,43 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName)
 	return adjLists;
 }
 
-GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength)
+/*
+* Given a list of explicit interference lines from the input file, constructs
+* an adjacency list for that graph, represented as an array of GraphNode objects.
+* 
+* NOTE: The GraphNode array is heap-allocated, and must be freed by the caller.
+*/
+GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength, int k)
 {
-	// Do a pass through the lines to see what the highest explicitly referenced
-	// node ID is.
-	int maxId = 0;
-	for (int i = 0; i < lines.size(); ++i)
+	// If lines is empty, we still need space for the "real registers" (nodes 0..K-1).
+	if (lines.size() == 0)
 	{
-		string line = lines[i];
-		string token;
-		stringstream ss(line);
+		listLength = k;
+	}
+	else
+	{
+		// Do a pass through the lines to see what the highest explicitly referenced
+		// node ID is. This is necessary since a node's integer ID doubles as the position
+		// in the adjacency list where its GraphNode object is stored. Indices 0..<maxId>
+		// must be valid.
+		int maxId = 0;
+		for (int i = 0; i < lines.size(); ++i)
+		{
+			string line = lines[i];
+			string token;
+			stringstream ss(line);
 
-		if (ss >> token && atoi(token.c_str()) > maxId)
-			maxId = atoi(token.c_str());
+			if (ss >> token && atoi(token.c_str()) > maxId)
+				maxId = atoi(token.c_str());
+		}
+
+		listLength = maxId + 1;
 	}
 
-	listLength = maxId + 1;
 	GraphNode* adjList = new GraphNode[listLength];
 
 	for (int i = 0; i < lines.size(); ++i)
 	{
-		// tokenize line (use " " as delimiter)
-
-		// node index <-- 1st token
-
-		// list of indices this node interferes with <-- 3rd, 4th, ... tokens (2nd token is the "-->"
 
 		string line = lines[i];
 		string token;
@@ -100,6 +119,7 @@ GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength)
 
 		int mainNodeId = -1;
 
+		// tokenize line (use " " as delimiter)
 		while (ss >> token)
 		{
 			if (token.compare(0, 3, "-->", 3) != 0)
@@ -122,8 +142,19 @@ GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength)
 		}
 	}
 
-	// All done... yield an array of GraphNode objects
-	// where the array indices correspond to the node IDs from the file.
-	// This is essentially an adjacency list for the graph.
+	// Now add explicit interferences for nodes 0..K-1
+	for (int i = 0; i < k; ++i)
+	{
+		for (int j = 0; j < k; ++j)
+		{
+			// Make sure we don't add duplicate interferences.
+			if (i != j && !adjList[i].isAdjacentToNode(i) && !adjList[i].isAdjacentToNode(j))
+			{
+				adjList[i].addAdjNode(j);
+				adjList[j].addAdjNode(i);
+			}
+		}
+	}
+
 	return adjList;
 }

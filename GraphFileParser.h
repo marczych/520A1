@@ -10,10 +10,10 @@ using namespace std;
 class GraphFileParser
 {
 public:
-	AdjacencyList* parse_infile(char*);
+	AdjacencyList* parse_infile(char*, int);
 
 private:
-	GraphNode* process_lines(vector<string>, int&);
+	GraphNode* process_lines(vector<string>, int&, int);
 };
 
 #endif
