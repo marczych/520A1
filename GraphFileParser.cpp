@@ -10,14 +10,14 @@
 
 using namespace std;
 
-void GraphFileParser::parse_infile(char* fileName)
+AdjacencyList* GraphFileParser::parse_infile(char* fileName)
 {
 	bool firstNewGraph = true;
 	vector<string> lines;
 	ifstream inFile;
 	string line;
 
-	AdjacencyList adjLists[27921]; // would probably be better to dynamically detect this number...
+	AdjacencyList* adjLists = new AdjacencyList[27921]; // would probably be better to dynamically detect this number...
 	int graphNum = 0;
 
 	inFile.open(fileName);
@@ -60,10 +60,11 @@ void GraphFileParser::parse_infile(char* fileName)
 			}
 		}
 		inFile.close();
-
-		// Return some sort of collection that holds all the adjacency lists
-		// constructed while reading the file
 	}
+
+	// Return some sort of collection that holds all the adjacency lists
+	// constructed while reading the file
+	return adjLists;
 }
 
 GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength)
@@ -81,7 +82,8 @@ GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength)
 			maxId = atoi(token.c_str());
 	}
 
-	GraphNode* adjList = new GraphNode[maxId + 1];
+	listLength = maxId + 1;
+	GraphNode* adjList = new GraphNode[listLength];
 
 	for (int i = 0; i < lines.size(); ++i)
 	{

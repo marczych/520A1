@@ -3,13 +3,14 @@
 
 #include <vector>
 #include "GraphNode.h"
+#include "AdjacencyList.h"
 
 using namespace std;
 
 class GraphFileParser
 {
 public:
-	void parse_infile(char*);
+	AdjacencyList* parse_infile(char*);
 
 private:
 	GraphNode* process_lines(vector<string>, int&);
