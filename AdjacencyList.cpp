@@ -7,3 +7,8 @@ void AdjacencyList::setAdjList(GraphNode* list, int length)
 	adjList = list;
 	listLength = length;
 }
+
+AdjacencyList::~AdjacencyList()
+{
+	delete(adjList);
+}

@@ -12,6 +12,7 @@ class AdjacencyList
 
 	public:
 		void setAdjList(GraphNode*, int);
+		~AdjacencyList();
 };
 
 #endif
