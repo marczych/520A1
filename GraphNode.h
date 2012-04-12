@@ -1,6 +1,7 @@
 #ifndef GRAPH_NODE_H
 #define GRAPH_NODE_H
 
+#include <iostream>
 #include <set>
 
 using namespace std;
@@ -23,7 +24,7 @@ public:
 
    void setRemoved(bool);
 
-   friend ostream& operator<<(ostream&, const GraphNode&);
+   friend std::ostream& operator<<(std::ostream&, const GraphNode&);
 };
 
 #endif
