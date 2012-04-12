@@ -37,13 +37,11 @@ void colorGraph(AdjacencyList* adjList, int realRegisters)
    {
       node = (*itr).second;
 
-      cout << *node << endl;
+      //cout << *node << endl;
 
-      /*
       if (node->getNumInterferences() < realRegisters)
       {
-         adjList->removeNode(node->getNodeId());
+         adjList->removeNode((*itr).first);
       }
-      */
    }
 }

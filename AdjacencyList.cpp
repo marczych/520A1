@@ -33,7 +33,8 @@ void AdjacencyList::removeNode(int id)
       adjList[*itr]->removeAdjNode(id);
    }
 
-   // Push the graph node onto the stack of removed nodes
+   removedNodes.push_back(node);
+   adjList.erase(id);
 }
 
 GraphNode* AdjacencyList::getNode(int id)
