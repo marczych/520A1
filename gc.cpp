@@ -1,4 +1,3 @@
-
 #include <iostream>
 
 #include "GraphFileParser.h"
@@ -27,20 +26,16 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void colorGraph(AdjacencyList *adjList, int realRegisters)
+void colorGraph(AdjacencyList* adjList, int realRegisters)
 {
    GraphNode* graphNodes = adjList->getAdjList();
    int numGraphNodes = adjList->getListLength();
 
    for (int j = 0; j < numGraphNodes; j ++)
    {
-      cout << j << ":\t" << graphNodes[j].getNumInterferences();
-
       if (graphNodes[j].getNumInterferences() < realRegisters)
       {
-         cout << " Pull out";
+         adjList->removeNode(j);
       }
-
-      cout << endl;
    }
 }

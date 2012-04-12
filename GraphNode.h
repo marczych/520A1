@@ -1,22 +1,25 @@
 #ifndef GRAPH_NODE_H
 #define GRAPH_NODE_H
 
-#include <vector>
+#include <set>
 
 using namespace std;
 
 class GraphNode
 {
-	int numInterferences;			// how many nodes this node interferes with
-	int color;						// this node's assigned color
-	vector<int> adjNodes;				// integer IDs of the nodes this node interferes with
-	vector<int> removedAdjNodes;		// node IDs removed during pruning
+	int color; // this node's assigned color
+	set<int> adjNodes; // integer IDs of the nodes this node interferes with
 
 public:
 	GraphNode();
 	void addAdjNode(int);
+   void removeAdjNode(int);
+   set<int> getAdjNodes();
+
 	bool isAdjacentToNode(int);
    int getNumInterferences();
+
+   void setRemoved(bool);
 };
 
 #endif

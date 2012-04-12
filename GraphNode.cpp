@@ -5,27 +5,30 @@ using namespace std;
 
 GraphNode::GraphNode()
 {
-	numInterferences = 0;
 	color = -1;
 }
 
 void GraphNode::addAdjNode(int id)
 {
-	adjNodes.push_back(id);
-	++numInterferences;
+	adjNodes.insert(id);
+}
+
+void GraphNode::removeAdjNode(int id)
+{
+   adjNodes.erase(id);
 }
 
 bool GraphNode::isAdjacentToNode(int id)
 {
-	if (adjNodes.size() == 0) return false;
-
-	vector<int>::iterator it;
-	for (it = adjNodes.begin(); it < adjNodes.end(); it++)
-		if (*it == id) return true;
-
-	return false;
+   return adjNodes.find(id) != adjNodes.end();
 }
 
-int GraphNode::getNumInterferences() {
-   return numInterferences;
+int GraphNode::getNumInterferences()
+{
+   return adjNodes.size();
+}
+
+set<int> GraphNode::getAdjNodes()
+{
+   return adjNodes;
 }

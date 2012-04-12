@@ -14,6 +14,7 @@ class AdjacencyList
 		void setAdjList(GraphNode*, int);
       int getListLength();
       GraphNode* getAdjList();
+      void removeNode(int);
 		~AdjacencyList();
 };
 
