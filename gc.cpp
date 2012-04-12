@@ -29,8 +29,9 @@ int main(int argc, char** argv)
 void colorGraph(AdjacencyList* adjList, int realRegisters)
 {
    map<int, GraphNode*>* graphNodes = adjList->getAdjList();
-   int numGraphNodes = adjList->getListLength();
    GraphNode* node;
+
+   cout << adjList->getListLength();
 
    for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
     itr != graphNodes->end(); itr++)
@@ -44,4 +45,6 @@ void colorGraph(AdjacencyList* adjList, int realRegisters)
          adjList->removeNode((*itr).first);
       }
    }
+
+   cout << " -> " << adjList->getListLength() << endl;
 }
