@@ -1,6 +1,8 @@
 #ifndef ADJ_LIST_H
 #define ADJ_LIST_H
 
+#include <map>
+#include <vector>
 #include "GraphNode.h"
 
 using namespace std;
@@ -8,12 +10,14 @@ using namespace std;
 class AdjacencyList
 {
 	int listLength;
-	GraphNode* adjList;
+	map<int, GraphNode*> adjList;
+   vector<GraphNode*> removedNodes;
 
 	public:
-		void setAdjList(GraphNode*, int);
+		void setAdjList(map<int, GraphNode*>);
       int getListLength();
-      GraphNode* getAdjList();
+      map<int, GraphNode*>* getAdjList();
+      void addEdge(int, int);
       void removeNode(int);
 		~AdjacencyList();
 };

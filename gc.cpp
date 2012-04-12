@@ -28,9 +28,10 @@ int main(int argc, char** argv)
 
 void colorGraph(AdjacencyList* adjList, int realRegisters)
 {
-   GraphNode* graphNodes = adjList->getAdjList();
+   map<int, GraphNode*>* graphNodes = adjList->getAdjList();
    int numGraphNodes = adjList->getListLength();
 
+   /*
    for (int j = 0; j < numGraphNodes; j ++)
    {
       if (graphNodes[j].getNumInterferences() < realRegisters)
@@ -38,4 +39,5 @@ void colorGraph(AdjacencyList* adjList, int realRegisters)
          adjList->removeNode(j);
       }
    }
+   */
 }

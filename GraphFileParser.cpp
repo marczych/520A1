@@ -25,6 +25,7 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 	string line;
 
 	AdjacencyList* adjLists = new AdjacencyList[27921]; // would probably be better to dynamically detect this number...
+
 	int graphNum = 0;
 
 	inFile.open(fileName);
@@ -44,10 +45,7 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 					// before we collect any more.
 					cout << "Processing graph " << graphNum << endl;
 
-					int listLength;
-					GraphNode* adjList = process_lines(lines, listLength, k);
-
-					adjLists[graphNum].setAdjList(adjList, listLength);
+					process_lines(lines, adjLists[graphNum].getAdjList(), k);
 
 					lines.clear();
 					++graphNum;
@@ -80,7 +78,7 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 * 
 * NOTE: The GraphNode array is heap-allocated, and must be freed by the caller.
 */
-GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength, int k)
+void GraphFileParser::process_lines(vector<string> lines, map<int, GraphNode*> adjList, int k)
 {
 	// If lines is empty, we still need space for the "real registers" (nodes 0..K-1).
 	if (lines.size() == 0)
@@ -107,11 +105,8 @@ GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength,
 		listLength = maxId + 1;
 	}
 
-	GraphNode* adjList = new GraphNode[listLength];
-
 	for (int i = 0; i < lines.size(); ++i)
 	{
-
 		string line = lines[i];
 		string token;
 		int tokenCount = 0;
@@ -147,12 +142,7 @@ GraphNode* GraphFileParser::process_lines(vector<string> lines, int& listLength,
 	{
 		for (int j = 0; j < k; ++j)
 		{
-			// Make sure we don't add duplicate interferences.
-			if (i != j && !adjList[i].isAdjacentToNode(i) && !adjList[i].isAdjacentToNode(j))
-			{
-				adjList[i].addAdjNode(j);
-				adjList[j].addAdjNode(i);
-			}
+         adjList.addEdge(i, j);
 		}
 	}
 

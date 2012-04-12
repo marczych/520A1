@@ -12,3 +12,6 @@ GraphNode.o: GraphNode.cpp GraphNode.h
 
 AdjacencyList.o: AdjacencyList.cpp AdjacencyList.h GraphNode.h
 	g++ -c AdjacencyList.cpp
+
+clean:
+	rm *.o gc
