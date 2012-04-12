@@ -13,7 +13,7 @@ public:
 	AdjacencyList* parse_infile(char*, int);
 
 private:
-   void process_lines(vector<string>, map<int, GraphNode*>, int);
+   void process_lines(vector<string>, AdjacencyList*, int);
 };
 
 #endif

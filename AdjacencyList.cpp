@@ -18,21 +18,40 @@ int AdjacencyList::getListLength()
 
 void AdjacencyList::addEdge(int first, int second)
 {
-   adjList[first]->addAdjNode(second);
-   adjList[second]->addAdjNode(first);
+
+   getNode(first)->addAdjNode(second);
+   getNode(second)->addAdjNode(first);
 }
 
 void AdjacencyList::removeNode(int id)
 {
    GraphNode* node = adjList[id];
-   set<int> adjNodes = node->getAdjNodes();
+   set<int>* adjNodes = node->getAdjNodes();
    
-   for (set<int>::iterator itr = adjNodes.begin(); itr != adjNodes.end(); ++itr)
+   for (set<int>::iterator itr = adjNodes->begin(); itr != adjNodes->end(); ++itr)
    {
       adjList[*itr]->removeAdjNode(id);
    }
 
    // Push the graph node onto the stack of removed nodes
+}
+
+GraphNode* AdjacencyList::getNode(int id)
+{
+   GraphNode* node;
+
+   // I sure hope count isn't too slow
+   if (adjList.count(id) == 0)
+   {
+      node = new GraphNode(id);
+      adjList.insert(pair<int, GraphNode*>(id, node));
+   }
+   else
+   {
+      node = adjList[id];
+   }
+
+   return node;
 }
 
 AdjacencyList::~AdjacencyList()

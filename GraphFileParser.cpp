@@ -45,7 +45,7 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 					// before we collect any more.
 					cout << "Processing graph " << graphNum << endl;
 
-					process_lines(lines, adjLists[graphNum].getAdjList(), k);
+					process_lines(lines, adjLists + graphNum, k);
 
 					lines.clear();
 					++graphNum;
@@ -78,33 +78,8 @@ AdjacencyList* GraphFileParser::parse_infile(char* fileName, int k)
 * 
 * NOTE: The GraphNode array is heap-allocated, and must be freed by the caller.
 */
-void GraphFileParser::process_lines(vector<string> lines, map<int, GraphNode*> adjList, int k)
+void GraphFileParser::process_lines(vector<string> lines, AdjacencyList* adjList, int k)
 {
-	// If lines is empty, we still need space for the "real registers" (nodes 0..K-1).
-	if (lines.size() == 0)
-	{
-		listLength = k;
-	}
-	else
-	{
-		// Do a pass through the lines to see what the highest explicitly referenced
-		// node ID is. This is necessary since a node's integer ID doubles as the position
-		// in the adjacency list where its GraphNode object is stored. Indices 0..<maxId>
-		// must be valid.
-		int maxId = 0;
-		for (int i = 0; i < lines.size(); ++i)
-		{
-			string line = lines[i];
-			string token;
-			stringstream ss(line);
-
-			if (ss >> token && atoi(token.c_str()) > maxId)
-				maxId = atoi(token.c_str());
-		}
-
-		listLength = maxId + 1;
-	}
-
 	for (int i = 0; i < lines.size(); ++i)
 	{
 		string line = lines[i];
@@ -128,9 +103,7 @@ void GraphFileParser::process_lines(vector<string> lines, map<int, GraphNode*> a
 				}
 				else
 				{
-					// node ID in adjacency list
-					adjList[mainNodeId].addAdjNode(nodeId);
-					adjList[nodeId].addAdjNode(mainNodeId);
+               adjList->addEdge(mainNodeId, nodeId);
 				}
 			}
 			++tokenCount;
@@ -142,9 +115,7 @@ void GraphFileParser::process_lines(vector<string> lines, map<int, GraphNode*> a
 	{
 		for (int j = 0; j < k; ++j)
 		{
-         adjList.addEdge(i, j);
+         adjList->addEdge(i, j);
 		}
 	}
-
-	return adjList;
 }

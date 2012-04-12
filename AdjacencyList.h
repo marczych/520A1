@@ -17,6 +17,7 @@ class AdjacencyList
 		void setAdjList(map<int, GraphNode*>);
       int getListLength();
       map<int, GraphNode*>* getAdjList();
+      GraphNode* getNode(int);
       void addEdge(int, int);
       void removeNode(int);
 		~AdjacencyList();

@@ -30,14 +30,20 @@ void colorGraph(AdjacencyList* adjList, int realRegisters)
 {
    map<int, GraphNode*>* graphNodes = adjList->getAdjList();
    int numGraphNodes = adjList->getListLength();
+   GraphNode* node;
 
-   /*
-   for (int j = 0; j < numGraphNodes; j ++)
+   for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
+    itr != graphNodes->end(); itr++)
    {
-      if (graphNodes[j].getNumInterferences() < realRegisters)
+      node = (*itr).second;
+
+      cout << *node << endl;
+
+      /*
+      if (node->getNumInterferences() < realRegisters)
       {
-         adjList->removeNode(j);
+         adjList->removeNode(node->getNodeId());
       }
+      */
    }
-   */
 }

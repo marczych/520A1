@@ -1,10 +1,12 @@
+#include <iostream>
 #include <vector>
 #include "GraphNode.h"
 
 using namespace std;
 
-GraphNode::GraphNode()
+GraphNode::GraphNode(int id)
 {
+   nodeId = id;
 	color = -1;
 }
 
@@ -28,7 +30,24 @@ int GraphNode::getNumInterferences()
    return adjNodes.size();
 }
 
-set<int> GraphNode::getAdjNodes()
+set<int>* GraphNode::getAdjNodes()
 {
-   return adjNodes;
+   return &adjNodes;
+}
+
+int GraphNode::getNodeId()
+{
+   return nodeId;
+}
+
+ostream& operator<<(ostream& os, const GraphNode& node)
+{ 
+   os << node.nodeId << ": ";
+
+   for (set<int>::iterator itr = node.adjNodes.begin(); itr != node.adjNodes.end(); itr++)
+   {
+      os << *itr << " ";
+   }
+
+   return os;
 }
