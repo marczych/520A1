@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void colorGraphs(AdjacencyList *, int);
+void colorGraph(AdjacencyList *, int);
 
 /*
 * Note: argv[0] = path of executable.
@@ -18,33 +18,29 @@ int main(int argc, char** argv)
 	GraphFileParser parser;
 	AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
 
-   colorGraphs(adjLists, realRegisters);
+   //for (int i = 0; i < 27921; i ++) {
+   for (int i = 0; i < 38; i ++)
+   {
+      colorGraph(adjLists + i, realRegisters);
+   }
 
 	return 0;
 }
 
-void colorGraphs(AdjacencyList *adjLists, int realRegisters)
+void colorGraph(AdjacencyList *adjList, int realRegisters)
 {
-   AdjacencyList *adjList;
+   GraphNode* graphNodes = adjList->getAdjList();
+   int numGraphNodes = adjList->getListLength();
 
-   //for (int i = 0; i < 27921; i ++) {
-   for (int i = 0; i < 38; i ++)
+   for (int j = 0; j < numGraphNodes; j ++)
    {
-      adjList = adjLists + i;
+      cout << j << ":\t" << graphNodes[j].getNumInterferences();
 
-      GraphNode* graphNodes = adjList->getAdjList();
-      int numGraphNodes = adjList->getListLength();
-
-      for (int j = 0; j < numGraphNodes; j ++)
+      if (graphNodes[j].getNumInterferences() < realRegisters)
       {
-         cout << j << ":\t" << graphNodes[j].getNumInterferences();
-
-         if (graphNodes[j].getNumInterferences() < realRegisters)
-         {
-            cout << " Pull out";
-         }
-
-         cout << endl;
+         cout << " Pull out";
       }
+
+      cout << endl;
    }
 }
