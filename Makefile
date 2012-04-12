@@ -1,5 +1,5 @@
 gc: gc.o GraphFileParser.o GraphNode.o AdjacencyList.o
-	g++ -o gc gc.o GraphFileParser.o GraphNode.o AdjacencyList.o
+	g++ -g -o gc gc.o GraphFileParser.o GraphNode.o AdjacencyList.o
 
 gc.o: gc.cpp GraphFileParser.h
 	g++ -c gc.cpp
