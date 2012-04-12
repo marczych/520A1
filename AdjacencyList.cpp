@@ -25,7 +25,7 @@ void AdjacencyList::addEdge(int first, int second)
 
 void AdjacencyList::removeNode(int id)
 {
-   GraphNode* node = adjList[id];
+   GraphNode* node = getNode(id);
    set<int>* adjNodes = node->getAdjNodes();
    
    for (set<int>::iterator itr = adjNodes->begin(); itr != adjNodes->end(); ++itr)
