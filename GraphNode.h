@@ -16,6 +16,7 @@ public:
 	GraphNode();
 	void addAdjNode(int);
 	bool isAdjacentToNode(int);
+   int getNumInterferences();
 };
 
 #endif

@@ -25,3 +25,7 @@ bool GraphNode::isAdjacentToNode(int id)
 
 	return false;
 }
+
+int GraphNode::getNumInterferences() {
+   return numInterferences;
+}
