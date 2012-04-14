@@ -30,7 +30,7 @@ void AdjacencyList::removeNode(int id)
    
    for (set<int>::iterator itr = adjNodes->begin(); itr != adjNodes->end(); ++itr)
    {
-      getNode(id)->removeAdjNode(id);
+      getNode(*itr)->removeAdjNode(id);
    }
 
    removedNodes.push_back(node);

@@ -21,7 +21,7 @@ int main(int argc, char** argv)
    bool colorable;
 
    //for (int i = 0; i < 27921; i ++) {
-   for (int i = 0; i < 30; i ++)
+   for (int i = 0; i < 32; i ++)
    {
       colorable = isGraphColorable(adjLists + i, realRegisters);
 
@@ -64,6 +64,12 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
       for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
        itr != graphNodes->end(); itr++)
       {
+         // Never touch real registers, we'll exit above if we're done
+         if ((*itr).first < 32)
+         {
+            continue;
+         }
+
          node = (*itr).second;
          interferences = node->getNumInterferences();
 
