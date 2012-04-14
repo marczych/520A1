@@ -18,6 +18,8 @@ void colorGraph(AdjacencyList *, int);
 vector<char*>* getGraphStartPtrs(char*);
 bool isGraphColorable(AdjacencyList*, int);
 bool canReconstructGraph(AdjacencyList*, int);
+void workOnGraph(char*);
+char* strpos(char*, char);
 
 /*
 * Note: argv[0] = path of executable.
@@ -30,15 +32,14 @@ int main(int argc, char** argv)
    GraphNode::realRegisters = realRegisters;
    AdjacencyList::realRegisters = realRegisters;
 	GraphFileParser parser;
-	AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
+	//AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
    bool colorable;
 
-   //for (int i = 0; i < 27921; i ++) {
-   for (int i = 0; i < 32; i ++)
-   {
-      colorable = isGraphColorable(adjLists + i, realRegisters);
+   vector<char*>* graphs = getGraphStartPtrs(argv[2]);
 
-      cout << i << "\t" << (colorable ? "true" : "false") << endl;
+   for (vector<char*>::iterator itr = graphs->begin(); itr != graphs->end(); itr++)
+   {
+      workOnGraph(*itr);
    }
 
 	return 0;
@@ -69,6 +70,20 @@ vector<char*>* getGraphStartPtrs(char* graphFileName)
 	}
 	
 	return graphStartPtrs;
+}
+
+void workOnGraph(char* graph)
+{
+   graph = strpos(graph, ' ') + 1; // Find graph number
+   int graphNum = atoi(graph);
+
+
+   /*
+   for (; *graph != 'G'; graph++)
+   {
+      
+   }
+   */
 }
 
 bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
@@ -148,4 +163,11 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 bool canReconstructGraph(AdjacencyList* adjList, int realRegisters)
 {
    return false;
+}
+
+char* strpos(char* haystack, char needle)
+{
+   for (; *haystack != needle; haystack++);
+
+   return haystack;
 }
