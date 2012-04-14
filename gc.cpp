@@ -85,7 +85,7 @@ void workOnGraph(char* graph, int realRegisters)
 
    // Reads in nodes and their neighboring nodes.
    // Each iteration starts after a '\n'.
-   for (; *graph != 'G' &&
+   for (; *graph != 'G' && *graph != '\0' &&
     // '3<->32 2<->33' etc. signals end of graph
     *(strpos(graph, '-') - 1) != '<'; graph++)
    {
