@@ -30,7 +30,7 @@ void AdjacencyList::removeNode(int id)
    
    for (set<int>::iterator itr = adjNodes->begin(); itr != adjNodes->end(); ++itr)
    {
-      adjList[*itr]->removeAdjNode(id);
+      getNode(id)->removeAdjNode(id);
    }
 
    removedNodes.push_back(node);
@@ -57,4 +57,17 @@ GraphNode* AdjacencyList::getNode(int id)
 
 AdjacencyList::~AdjacencyList()
 {
+}
+
+ostream& operator<<(ostream& os, const AdjacencyList& adjList)
+{ 
+   os << "Adj list" << endl;
+
+   for (map<int, GraphNode*>::const_iterator itr = adjList.adjList.begin();
+    itr != adjList.adjList.end(); itr++)
+   {
+      os << *((*itr).second) << endl;
+   }
+
+   return os;
 }

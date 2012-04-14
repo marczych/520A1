@@ -7,7 +7,9 @@ using namespace std;
 GraphNode::GraphNode(int id)
 {
    nodeId = id;
-	color = -1;
+
+   // Automatically color real registers with their id
+	color = nodeId < 32 ? nodeId : -1;
 }
 
 void GraphNode::addAdjNode(int id)
@@ -42,7 +44,7 @@ int GraphNode::getNodeId()
 
 ostream& operator<<(ostream& os, const GraphNode& node)
 { 
-   os << node.nodeId << ": ";
+   os << node.nodeId << ":\t";
 
    for (set<int>::iterator itr = node.adjNodes.begin(); itr != node.adjNodes.end(); itr++)
    {
