@@ -110,13 +110,4 @@ void GraphFileParser::process_lines(vector<string> lines, AdjacencyList* adjList
 			++tokenCount;
 		}
 	}
-
-	// Now add explicit interferences for nodes 0..K-1
-	for (int i = 0; i < k; ++i)
-	{
-		for (int j = 0; j < k; ++j)
-		{
-         adjList->addEdge(i, j);
-		}
-	}
 }

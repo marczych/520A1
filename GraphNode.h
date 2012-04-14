@@ -13,6 +13,8 @@ class GraphNode
 	set<int> adjNodes; // integer IDs of the nodes this node interferes with
 
 public:
+   static int realRegisters;
+
 	GraphNode(int);
 	void addAdjNode(int);
    void removeAdjNode(int);

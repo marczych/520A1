@@ -2,6 +2,17 @@
 
 using namespace std;
 
+int AdjacencyList::realRegisters = -1;
+
+AdjacencyList::AdjacencyList()
+{
+   // Initialize real registers
+   for (int i = 0; i < realRegisters; i ++)
+   {
+      getNode(i);
+   }
+}
+
 void AdjacencyList::setAdjList(map<int, GraphNode*> list)
 {
 	adjList = list;

@@ -13,6 +13,9 @@ class AdjacencyList
    vector<GraphNode*> removedNodes;
 
 public:
+   static int realRegisters;
+
+   AdjacencyList();
    void setAdjList(map<int, GraphNode*>);
    int getListLength();
    map<int, GraphNode*>* getAdjList();

@@ -16,6 +16,8 @@ bool canReconstructGraph(AdjacencyList*, int);
 int main(int argc, char** argv)
 {
    int realRegisters = atoi(argv[1]);
+   GraphNode::realRegisters = realRegisters;
+   AdjacencyList::realRegisters = realRegisters;
 	GraphFileParser parser;
 	AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
    bool colorable;

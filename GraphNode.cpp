@@ -4,6 +4,8 @@
 
 using namespace std;
 
+int GraphNode::realRegisters = -1;
+
 GraphNode::GraphNode(int id)
 {
    nodeId = id;
@@ -29,7 +31,14 @@ bool GraphNode::isAdjacentToNode(int id)
 
 int GraphNode::getNumInterferences()
 {
-   return adjNodes.size();
+   if (nodeId < 32)
+   {
+      return adjNodes.size() + realRegisters;
+   }
+   else
+   {
+      return adjNodes.size();
+   }
 }
 
 set<int>* GraphNode::getAdjNodes()
