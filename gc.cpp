@@ -15,7 +15,7 @@
 using namespace std;
 
 void colorGraph(AdjacencyList *, int);
-vector<char*> getGraphStartPtrs(char*);
+vector<char*>* getGraphStartPtrs(char*);
 bool isGraphColorable(AdjacencyList*, int);
 bool canReconstructGraph(AdjacencyList*, int);
 
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-vector<char*> getGraphStartPtrs(char* graphFileName)
+vector<char*>* getGraphStartPtrs(char* graphFileName)
 {
 	// open a file descriptor attached to the graph file
 	int fd = open(graphFileName, O_RDONLY);
@@ -56,7 +56,7 @@ vector<char*> getGraphStartPtrs(char* graphFileName)
 	// create the memory map
 	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
 	
-	vector<char*> graphStartPtrs;
+	vector<char*>* graphStartPtrs = new vector<char*>();
 	
 	// construct a list of pointers to the start of graph descriptions
 	// in the memory-mapped region
@@ -64,7 +64,7 @@ vector<char*> getGraphStartPtrs(char* graphFileName)
 	{
 		if (map[i] == 'G')
 		{
-			graphStartPtrs.push_back(map + i);
+			graphStartPtrs->push_back(map + i);
 		}
 	}
 	
