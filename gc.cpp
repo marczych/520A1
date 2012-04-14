@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void colorGraph(AdjacencyList *, int);
+bool isGraphColorable(AdjacencyList*, int);
 
 /*
 * Note: argv[0] = path of executable.
@@ -17,35 +17,42 @@ int main(int argc, char** argv)
    int realRegisters = atoi(argv[1]);
 	GraphFileParser parser;
 	AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
+   bool colorable;
 
    //for (int i = 0; i < 27921; i ++) {
    for (int i = 0; i < 38; i ++)
    {
-      colorGraph(adjLists + i, realRegisters);
+      colorable = isGraphColorable(adjLists + i, realRegisters);
+
+      cout << "Graph colorable: " << colorable << endl;
    }
 
 	return 0;
 }
 
-void colorGraph(AdjacencyList* adjList, int realRegisters)
+bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 {
    map<int, GraphNode*>* graphNodes = adjList->getAdjList();
    GraphNode* node;
+   bool removedNode;
 
-   cout << adjList->getListLength();
-
-   for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
-    itr != graphNodes->end(); itr++)
+   do
    {
-      node = (*itr).second;
+      removedNode = false;
 
-      //cout << *node << endl;
-
-      if (node->getNumInterferences() < realRegisters)
+      for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
+       itr != graphNodes->end(); itr++)
       {
-         adjList->removeNode((*itr).first);
-      }
-   }
+         node = (*itr).second;
 
-   cout << " -> " << adjList->getListLength() << endl;
+         if (node->getNumInterferences() < realRegisters)
+         {
+            adjList->removeNode((*itr).first);
+            removedNode = true;
+         }
+      }
+   } while (removedNode);
+
+   // All real registers have edges to eachother
+   return graphNodes->size() <= realRegisters;
 }
