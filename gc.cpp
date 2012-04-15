@@ -17,8 +17,8 @@ using namespace std;
 
 void colorGraph(AdjacencyList *, int);
 void processGraphs(char*, int);
-bool isGraphColorable(AdjacencyList*, int);
-bool canReconstructGraph(AdjacencyList*, int);
+bool isGraphColorable(AdjacencyList, int);
+bool canReconstructGraph(AdjacencyList, int);
 void workOnGraph(char*, int);
 char* strpos(char*, char);
 
@@ -54,21 +54,65 @@ void processGraphs(char* graphFileName, int k)
 
 	// look through the memory-mapped region for the start of graph descriptions.
 	// as soon as we find one, process that section.
-	
-	// NOTE: Comment out the line below to disable OpenMP shenanigans.
-	#pragma omp parallel for shared(map)
+	//#pragma omp parallel for shared(map)
+	vector<char*> graphStartPtrs;
 	for (int i = 0; i < size; ++i)
 	{
 		if (map[i] == 'G')
 		{
-			workOnGraph(map + i, k);
+			//workOnGraph(map + i, k);
+			graphStartPtrs.push_back(map + i);
 		}
+	}
+	
+	cout << "Graph start pointers found." << endl;
+	
+	AdjacencyList* adjLists = new AdjacencyList[graphStartPtrs.size()];
+	#pragma omp parallel for
+	for (int i = 0; i < graphStartPtrs.size(); ++i)
+	{
+		//AdjacencyList* adjList = new AdjacencyList();
+		AdjacencyList adjList = adjLists[i];
+		char* graph = graphStartPtrs[i];
+		
+		graph = strpos(graph, ' ') + 1; // Find graph number
+		char* endOfLine;
+		int graphNum = atoi(graph);
+		int nodeId;
+
+		graph = strpos(graph, '\n') + 1;
+		graph = strpos(graph, '\n') + 1; // Skip the "K=XX" line
+
+		// Reads in nodes and their neighboring nodes.
+		// Each iteration starts after a '\n'.
+		for (; *graph != 'G' && *graph != '\0' &&
+		// '3<->32 2<->33' etc. signals end of graph
+		*(strpos(graph, '-') - 1) != '<'; graph++)
+		{
+			nodeId = atoi(graph);
+			graph = strpos(graph, '>') + 2; // Go to start of interferences
+
+			for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
+			graph = strpos(graph, ' ') + 1)
+			{
+				adjList.addEdge(nodeId, atoi(graph));
+			}
+		}
+	}
+	
+	cout << "Adjacency lists created." << endl;
+	
+	#pragma omp parallel for
+	for (int i = 0; i < graphStartPtrs.size(); ++i)
+	{
+		bool colorable = isGraphColorable(adjLists[i], k);
+		cout << i+1 << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
 	}
 }
 
 void workOnGraph(char* graph, int realRegisters)
 {
-   AdjacencyList adjList;
+   AdjacencyList* adjList = new AdjacencyList();
    graph = strpos(graph, ' ') + 1; // Find graph number
    char* endOfLine;
    int graphNum = atoi(graph);
@@ -89,17 +133,17 @@ void workOnGraph(char* graph, int realRegisters)
       for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
        graph = strpos(graph, ' ') + 1)
       {
-         adjList.addEdge(nodeId, atoi(graph));
+         adjList->addEdge(nodeId, atoi(graph));
       }
-   }
+	}
 
-   bool colorable = isGraphColorable(&adjList, realRegisters);
-   cout << graphNum << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
+   //bool colorable = isGraphColorable(adjList, realRegisters);
+   //cout << graphNum << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
 }
 
-bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
+bool isGraphColorable(AdjacencyList adjList, int realRegisters)
 {
-   map<int, GraphNode*>* graphNodes = adjList->getAdjList();
+   map<int, GraphNode*>* graphNodes = adjList.getAdjList();
    GraphNode* node;
    bool removedNode;
    bool optimistic = false; // True if we should optimistically remove nodes
@@ -138,13 +182,12 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 
          node = (*itr).second;
 		 
-		 // *** With OpenMP, node is sometimes null. ***
          interferences = node->getNumInterferences();
 
          if (interferences < realRegisters ||
           (optimistic && interferences == realRegisters))
          {
-            adjList->removeNode((*itr).first);
+            adjList.removeNode((*itr).first);
             removedNode = true;
 
             if (optimistic)
@@ -173,7 +216,7 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 }
 
 // Returns true if the graph was successfully colored during reconstruction
-bool canReconstructGraph(AdjacencyList* adjList, int realRegisters)
+bool canReconstructGraph(AdjacencyList adjList, int realRegisters)
 {
    return false;
 }
