@@ -15,7 +15,7 @@
 using namespace std;
 
 void colorGraph(AdjacencyList *, int);
-vector<char*>* getGraphStartPtrs(char*);
+void processGraphs(char*, int);
 bool isGraphColorable(AdjacencyList*, int);
 bool canReconstructGraph(AdjacencyList*, int);
 void workOnGraph(char*, int);
@@ -33,43 +33,33 @@ int main(int argc, char** argv)
    AdjacencyList::realRegisters = realRegisters;
 	GraphFileParser parser;
 	//AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
-   bool colorable;
+   //bool colorable;
 
-   vector<char*>* graphs = getGraphStartPtrs(argv[2]);
-
-   for (vector<char*>::iterator itr = graphs->begin(); itr != graphs->end(); itr++)
-   {
-      workOnGraph(*itr, realRegisters);
-   }
+	processGraphs(argv[2], realRegisters);
 
 	return 0;
 }
 
-vector<char*>* getGraphStartPtrs(char* graphFileName)
+void processGraphs(char* graphFileName, int k)
 {
 	// open a file descriptor attached to the graph file
 	int fd = open(graphFileName, O_RDONLY);
 	
 	// get the file size
 	long size = lseek(fd, 0, SEEK_END);
-	//cout << "File size = " << size << endl;
 	
 	// create the memory map
 	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
 	
-	vector<char*>* graphStartPtrs = new vector<char*>();
-	
-	// construct a list of pointers to the start of graph descriptions
-	// in the memory-mapped region
+	// look through the memory-mapped region for the start of graph descriptions.
+	// as soon as we find one, process that section.
 	for (int i = 0; i < size; ++i)
 	{
 		if (map[i] == 'G')
 		{
-			graphStartPtrs->push_back(map + i);
+			workOnGraph(map + i, k);
 		}
 	}
-	
-	return graphStartPtrs;
 }
 
 void workOnGraph(char* graph, int realRegisters)
