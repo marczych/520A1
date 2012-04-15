@@ -18,6 +18,8 @@ void colorGraph(AdjacencyList *, int);
 vector<char*>* getGraphStartPtrs(char*);
 bool isGraphColorable(AdjacencyList*, int);
 bool canReconstructGraph(AdjacencyList*, int);
+void workOnGraph(char*, int);
+char* strpos(char*, char);
 
 /*
 * Note: argv[0] = path of executable.
@@ -30,15 +32,14 @@ int main(int argc, char** argv)
    GraphNode::realRegisters = realRegisters;
    AdjacencyList::realRegisters = realRegisters;
 	GraphFileParser parser;
-	AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
+	//AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
    bool colorable;
 
-   //for (int i = 0; i < 27921; i ++) {
-   for (int i = 0; i < 32; i ++)
-   {
-      colorable = isGraphColorable(adjLists + i, realRegisters);
+   vector<char*>* graphs = getGraphStartPtrs(argv[2]);
 
-      cout << i << "\t" << (colorable ? "true" : "false") << endl;
+   for (vector<char*>::iterator itr = graphs->begin(); itr != graphs->end(); itr++)
+   {
+      workOnGraph(*itr, realRegisters);
    }
 
 	return 0;
@@ -69,6 +70,37 @@ vector<char*>* getGraphStartPtrs(char* graphFileName)
 	}
 	
 	return graphStartPtrs;
+}
+
+void workOnGraph(char* graph, int realRegisters)
+{
+   AdjacencyList adjList;
+   graph = strpos(graph, ' ') + 1; // Find graph number
+   char* endOfLine;
+   int graphNum = atoi(graph);
+   int nodeId;
+
+   graph = strpos(graph, '\n') + 1;
+   graph = strpos(graph, '\n') + 1; // Skip the "K=XX" line
+
+   // Reads in nodes and their neighboring nodes.
+   // Each iteration starts after a '\n'.
+   for (; *graph != 'G' && *graph != '\0' &&
+    // '3<->32 2<->33' etc. signals end of graph
+    *(strpos(graph, '-') - 1) != '<'; graph++)
+   {
+      nodeId = atoi(graph);
+      graph = strpos(graph, '>') + 2; // Go to start of interferences
+
+      for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
+       graph = strpos(graph, ' ') + 1)
+      {
+         adjList.addEdge(nodeId, atoi(graph));
+      }
+   }
+
+   bool colorable = isGraphColorable(&adjList, realRegisters);
+   cout << graphNum << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
 }
 
 bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
@@ -148,4 +180,11 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 bool canReconstructGraph(AdjacencyList* adjList, int realRegisters)
 {
    return false;
+}
+
+char* strpos(char* haystack, char needle)
+{
+   for (; *haystack != needle; haystack++);
+
+   return haystack;
 }
