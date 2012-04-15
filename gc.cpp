@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <omp.h>
 
 #include "GraphFileParser.h"
 
@@ -50,9 +51,12 @@ void processGraphs(char* graphFileName, int k)
 	
 	// create the memory map
 	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
-	
+
 	// look through the memory-mapped region for the start of graph descriptions.
 	// as soon as we find one, process that section.
+	
+	// NOTE: Comment out the line below to disable OpenMP shenanigans.
+	#pragma omp parallel for shared(map)
 	for (int i = 0; i < size; ++i)
 	{
 		if (map[i] == 'G')
@@ -133,6 +137,8 @@ bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
          }
 
          node = (*itr).second;
+		 
+		 // *** With OpenMP, node is sometimes null. ***
          interferences = node->getNumInterferences();
 
          if (interferences < realRegisters ||
