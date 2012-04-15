@@ -17,8 +17,8 @@ using namespace std;
 
 void colorGraph(AdjacencyList *, int);
 void processGraphs(char*, int);
-bool isGraphColorable(AdjacencyList, int);
-bool canReconstructGraph(AdjacencyList, int);
+bool isGraphColorable(AdjacencyList*, int);
+bool canReconstructGraph(AdjacencyList*, int);
 void workOnGraph(char*, int);
 char* strpos(char*, char);
 
@@ -71,8 +71,7 @@ void processGraphs(char* graphFileName, int k)
 	#pragma omp parallel for
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
 	{
-		//AdjacencyList* adjList = new AdjacencyList();
-		AdjacencyList adjList = adjLists[i];
+		AdjacencyList* adjList = adjLists + i;
 		char* graph = graphStartPtrs[i];
 		
 		graph = strpos(graph, ' ') + 1; // Find graph number
@@ -95,7 +94,7 @@ void processGraphs(char* graphFileName, int k)
 			for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
 			graph = strpos(graph, ' ') + 1)
 			{
-				adjList.addEdge(nodeId, atoi(graph));
+				adjList->addEdge(nodeId, atoi(graph));
 			}
 		}
 	}
@@ -105,7 +104,7 @@ void processGraphs(char* graphFileName, int k)
 	#pragma omp parallel for
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
 	{
-		adjLists[i].setColorable(isGraphColorable(adjLists[i], k));
+		adjLists[i].setColorable(isGraphColorable(adjLists + i, k));
 	}
 
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
@@ -143,9 +142,9 @@ void workOnGraph(char* graph, int realRegisters)
 	}
 }
 
-bool isGraphColorable(AdjacencyList adjList, int realRegisters)
+bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
 {
-   map<int, GraphNode*>* graphNodes = adjList.getAdjList();
+   map<int, GraphNode*>* graphNodes = adjList->getAdjList();
    GraphNode* node;
    bool removedNode;
    bool optimistic = false; // True if we should optimistically remove nodes
@@ -189,7 +188,7 @@ bool isGraphColorable(AdjacencyList adjList, int realRegisters)
          if (interferences < realRegisters ||
           (optimistic && interferences == realRegisters))
          {
-            adjList.removeNode((*itr).first);
+            adjList->removeNode((*itr).first);
             removedNode = true;
 
             if (optimistic)
@@ -218,7 +217,7 @@ bool isGraphColorable(AdjacencyList adjList, int realRegisters)
 }
 
 // Returns true if the graph was successfully colored during reconstruction
-bool canReconstructGraph(AdjacencyList adjList, int realRegisters)
+bool canReconstructGraph(AdjacencyList* adjList, int realRegisters)
 {
    return false;
 }
