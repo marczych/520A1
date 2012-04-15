@@ -11,6 +11,7 @@ class AdjacencyList
 {
 	map<int, GraphNode*> adjList;
    vector<GraphNode*> removedNodes;
+   bool colorable;
 
 public:
    static int realRegisters;
@@ -22,6 +23,8 @@ public:
    GraphNode* getNode(int);
    void addEdge(int, int);
    void removeNode(int);
+   void setColorable(bool);
+   bool isColorable();
    ~AdjacencyList();
 
    friend std::ostream& operator<<(std::ostream&, const AdjacencyList&);

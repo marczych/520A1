@@ -11,6 +11,18 @@ AdjacencyList::AdjacencyList()
    {
       getNode(i);
    }
+
+   colorable = false;
+}
+
+bool AdjacencyList::isColorable()
+{
+   return colorable;
+}
+
+void AdjacencyList::setColorable(bool color)
+{
+   colorable = color;
 }
 
 void AdjacencyList::setAdjList(map<int, GraphNode*> list)

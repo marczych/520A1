@@ -105,9 +105,14 @@ void processGraphs(char* graphFileName, int k)
 	#pragma omp parallel for
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
 	{
-		bool colorable = isGraphColorable(adjLists[i], k);
-		cout << i+1 << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
+		adjLists[i].setColorable(isGraphColorable(adjLists[i], k));
 	}
+
+	for (int i = 0; i < graphStartPtrs.size(); ++i)
+   {
+      cout << i+1 << ":\t" << (adjLists[i].isColorable() ? "Colorable" :
+       "Uncolorable") << endl;
+   }
 }
 
 void workOnGraph(char* graph, int realRegisters)
@@ -136,9 +141,6 @@ void workOnGraph(char* graph, int realRegisters)
          adjList->addEdge(nodeId, atoi(graph));
       }
 	}
-
-   //bool colorable = isGraphColorable(adjList, realRegisters);
-   //cout << graphNum << ": " << (colorable ? "Colorable" : "Uncolorable") << endl;
 }
 
 bool isGraphColorable(AdjacencyList adjList, int realRegisters)
