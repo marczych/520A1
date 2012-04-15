@@ -65,16 +65,16 @@ void AdjacencyList::removeNode(int id)
 GraphNode* AdjacencyList::getNode(int id)
 {
    GraphNode* node;
+   map<int, GraphNode*>::iterator itr = adjList.find(id);
 
-   // I sure hope count isn't too slow
-   if (adjList.count(id) == 0)
+   if (itr == adjList.end())
    {
       node = new GraphNode(id);
       adjList.insert(pair<int, GraphNode*>(id, node));
    }
    else
    {
-      node = adjList[id];
+      node = (*itr).second;
    }
 
    return node;
