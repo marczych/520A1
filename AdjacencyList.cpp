@@ -29,9 +29,11 @@ int AdjacencyList::getListLength()
 
 void AdjacencyList::addEdge(int first, int second)
 {
-
-   getNode(first)->addAdjNode(second);
-   getNode(second)->addAdjNode(first);
+   if (second > first || second < 32)
+   {
+      getNode(first)->addAdjNode(second);
+      getNode(second)->addAdjNode(first);
+   }
 }
 
 void AdjacencyList::removeNode(int id)
