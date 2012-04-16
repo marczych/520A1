@@ -51,6 +51,16 @@ int GraphNode::getNodeId()
    return nodeId;
 }
 
+void GraphNode::setColor(int col)
+{
+   color = col;
+}
+
+int GraphNode::getColor()
+{
+   return color;
+}
+
 ostream& operator<<(ostream& os, const GraphNode& node)
 { 
    os << node.nodeId << ":\t";

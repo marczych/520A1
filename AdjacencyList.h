@@ -2,7 +2,7 @@
 #define ADJ_LIST_H
 
 #include <map>
-#include <vector>
+#include <stack>
 #include "GraphNode.h"
 
 using namespace std;
@@ -10,13 +10,16 @@ using namespace std;
 class AdjacencyList
 {
 	map<int, GraphNode*> adjList;
-   vector<GraphNode*> removedNodes;
+   stack<GraphNode*> removedNodes;
    bool colorable;
 
    bool canReconstructGraph();
 
+   static set<int> availableColors;
+
 public:
    static int realRegisters;
+   static void setRealRegisters(int);
 
    AdjacencyList();
    void setAdjList(map<int, GraphNode*>);
@@ -24,6 +27,7 @@ public:
    map<int, GraphNode*>* getAdjList();
    GraphNode* getNode(int);
    void addEdge(int, int);
+   void addSingleEdge(int, int);
    void removeNode(int);
    void setColorable(bool);
    void computeColorability();

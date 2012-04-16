@@ -3,6 +3,17 @@
 using namespace std;
 
 int AdjacencyList::realRegisters = -1;
+set<int> AdjacencyList::availableColors;
+
+void AdjacencyList::setRealRegisters(int registers)
+{
+   realRegisters = registers;
+
+   for (int i = 0; i < realRegisters; i ++)
+   {
+      availableColors.insert(i);
+   }
+}
 
 AdjacencyList::AdjacencyList()
 {
@@ -48,6 +59,11 @@ void AdjacencyList::addEdge(int first, int second)
    }
 }
 
+void AdjacencyList::addSingleEdge(int from, int to)
+{
+   getNode(from)->addAdjNode(to);
+}
+
 void AdjacencyList::removeNode(int id)
 {
    GraphNode* node = getNode(id);
@@ -58,7 +74,7 @@ void AdjacencyList::removeNode(int id)
       getNode(*itr)->removeAdjNode(id);
    }
 
-   removedNodes.push_back(node);
+   removedNodes.push(node);
    adjList.erase(id);
 }
 

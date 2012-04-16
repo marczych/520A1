@@ -20,6 +20,8 @@ public:
    void removeAdjNode(int);
    set<int>* getAdjNodes();
    int getNodeId();
+   int getColor();
+   void setColor(int);
 
 	bool isAdjacentToNode(int);
    int getNumInterferences();

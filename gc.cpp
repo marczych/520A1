@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 {
    int realRegisters = atoi(argv[1]);
    GraphNode::realRegisters = realRegisters;
-   AdjacencyList::realRegisters = realRegisters;
+   AdjacencyList::setRealRegisters(realRegisters);
 	GraphFileParser parser;
 	//AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
    //bool colorable;
@@ -47,6 +47,7 @@ void processGraphs(char* graphFileName, int k)
 	
 	// create the memory map
 	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
+   char* eof = map + size;
 
 	// look through the memory-mapped region for the start of graph descriptions.
 	// as soon as we find one, process that section.
@@ -79,7 +80,7 @@ void processGraphs(char* graphFileName, int k)
 
 		// Reads in nodes and their neighboring nodes.
 		// Each iteration starts after a '\n'.
-		for (; *graph != 'G' && *graph != '\0' &&
+		for (; *graph != 'G' && graph < eof &&
 		// '3<->32 2<->33' etc. signals end of graph
 		*(strpos(graph, '-') - 1) != '<'; graph++)
 		{
