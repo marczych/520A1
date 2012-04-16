@@ -19,7 +19,6 @@ void colorGraph(AdjacencyList *, int);
 void processGraphs(char*, int);
 bool isGraphColorable(AdjacencyList*, int);
 bool canReconstructGraph(AdjacencyList*, int);
-void workOnGraph(char*, int);
 char* strpos(char*, char);
 
 /*
@@ -60,7 +59,6 @@ void processGraphs(char* graphFileName, int k)
 	{
 		if (map[i] == 'G')
 		{
-			//workOnGraph(map + i, k);
 			graphStartPtrs.push_back(map + i);
 		}
 	}
@@ -112,34 +110,6 @@ void processGraphs(char* graphFileName, int k)
       cout << i+1 << ":\t" << (adjLists[i].isColorable() ? "Colorable" :
        "Uncolorable") << endl;
    }
-}
-
-void workOnGraph(char* graph, int realRegisters)
-{
-   AdjacencyList* adjList = new AdjacencyList();
-   graph = strpos(graph, ' ') + 1; // Find graph number
-   char* endOfLine;
-   int graphNum = atoi(graph);
-   int nodeId;
-
-   graph = strpos(graph, '\n') + 1;
-   graph = strpos(graph, '\n') + 1; // Skip the "K=XX" line
-
-   // Reads in nodes and their neighboring nodes.
-   // Each iteration starts after a '\n'.
-   for (; *graph != 'G' && *graph != '\0' &&
-    // '3<->32 2<->33' etc. signals end of graph
-    *(strpos(graph, '-') - 1) != '<'; graph++)
-   {
-      nodeId = atoi(graph);
-      graph = strpos(graph, '>') + 2; // Go to start of interferences
-
-      for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
-       graph = strpos(graph, ' ') + 1)
-      {
-         adjList->addEdge(nodeId, atoi(graph));
-      }
-	}
 }
 
 bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
