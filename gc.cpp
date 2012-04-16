@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 #include <omp.h>
+#include <fstream>
+#include <sstream>
 
 #include "GraphFileParser.h"
 
@@ -17,6 +19,7 @@ using namespace std;
 
 void processGraphs(char*, int);
 char* strpos(char*, char);
+void writeResultsToFile(int, bool[], int);
 
 /*
 * Note: argv[0] = path of executable.
@@ -61,11 +64,12 @@ void processGraphs(char* graphFileName, int k)
 		}
 	}
 	
+	const int numGraphs = graphStartPtrs.size();
 	cout << "Graph start pointers found." << endl;
 	
 	AdjacencyList* adjLists = new AdjacencyList[graphStartPtrs.size()];
 	#pragma omp parallel for
-	for (int i = 0; i < graphStartPtrs.size(); ++i)
+	for (int i = 0; i < numGraphs; ++i)
 	{
 		AdjacencyList* adjList = adjLists + i;
 		char* graph = graphStartPtrs[i];
@@ -97,17 +101,44 @@ void processGraphs(char* graphFileName, int k)
 	
 	cout << "Adjacency lists created." << endl;
 	
+	bool results[numGraphs];
+	
 	#pragma omp parallel for
-	for (int i = 0; i < graphStartPtrs.size(); ++i)
+	for (int i = 0; i < numGraphs; ++i)
 	{
 		adjLists[i].computeColorability();
+		results[i] = adjLists[i].isColorable();
 	}
+	
+	// create output file
+	writeResultsToFile(k, results, numGraphs);
+}
 
-	for (int i = 0; i < graphStartPtrs.size(); ++i)
-   {
-      cout << i+1 << ":\t" << (adjLists[i].isColorable() ? "Colorable" :
-       "Uncolorable") << endl;
-   }
+void writeResultsToFile(int k, bool results[], int numGraphs)
+{
+	ofstream outFile;
+	string outName;
+	
+	// Convert our K value to a string
+	stringstream temp;
+	temp << k;
+	outName = temp.str();
+	
+	// Finish making the output file name, then open the file.
+	outName += "_results.txt";
+	outFile.open(outName.c_str());
+	
+	for (int i = 0; i < numGraphs; ++i)
+	{
+		outFile << "Graph " << i+1 << ": ";
+		
+		if (results[i])
+			outFile << "Colorable";
+		else
+			outFile << "Not Colorable";
+		
+		outFile << endl;
+	}
 }
 
 char* strpos(char* haystack, char needle)
