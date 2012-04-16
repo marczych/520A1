@@ -103,7 +103,7 @@ void processGraphs(char* graphFileName, int k)
 	
 	bool results[numGraphs];
 	
-	#pragma omp parallel for
+	//#pragma omp parallel for
 	for (int i = 0; i < numGraphs; ++i)
 	{
 		adjLists[i].computeColorability();
