@@ -80,6 +80,86 @@ GraphNode* AdjacencyList::getNode(int id)
    return node;
 }
 
+void AdjacencyList::computeColorability()
+{
+   GraphNode* node;
+   bool removedNode;
+   bool optimistic = false; // True if we should optimistically remove nodes
+   bool tookOptimistic = false; // True if we have removed a node optimistically
+   int interferences;
+
+   for (;;)
+   {
+      // The current graph is definitely colorable
+      if (adjList.size() <= realRegisters)
+      {
+         // If we haven't removed any nodes optimistically then
+         // we can definitely color the graph
+         if (!tookOptimistic)
+         {
+            colorable = true;
+            return;
+         }
+         else
+         {
+            // Graph might be colorable, lets try to reconstruct it to find out
+            colorable = canReconstructGraph();
+            return;
+         }
+      }
+
+      removedNode = false;
+
+      for (map<int, GraphNode*>::iterator itr = adjList.begin();
+       itr != adjList.end(); itr++)
+      {
+         // Never touch real registers, we'll exit above if we're done
+         if ((*itr).first < 32)
+         {
+            continue;
+         }
+
+         node = (*itr).second;
+         interferences = node->getNumInterferences();
+
+         if (interferences < realRegisters ||
+          (optimistic && interferences == realRegisters))
+         {
+            removeNode((*itr).first);
+            removedNode = true;
+
+            if (optimistic)
+            {
+               tookOptimistic = true;
+               optimistic = false;
+               removedNode = true;
+
+               break;
+            }
+         }
+      }
+
+      // Couldn't find any optimistic candidates
+      if (optimistic)
+      {
+         colorable = false;
+         return;
+      }
+
+      // Didn't find one, lets look optimistically
+      if (!removedNode)
+      {
+         optimistic = true;
+      }
+   }
+}
+
+// Returns true if the graph was successfully colored during reconstruction
+bool AdjacencyList::canReconstructGraph()
+{
+   return false;
+}
+
 AdjacencyList::~AdjacencyList()
 {
 }

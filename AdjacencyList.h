@@ -13,6 +13,8 @@ class AdjacencyList
    vector<GraphNode*> removedNodes;
    bool colorable;
 
+   bool canReconstructGraph();
+
 public:
    static int realRegisters;
 
@@ -24,6 +26,7 @@ public:
    void addEdge(int, int);
    void removeNode(int);
    void setColorable(bool);
+   void computeColorability();
    bool isColorable();
    ~AdjacencyList();
 

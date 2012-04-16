@@ -15,10 +15,7 @@
 
 using namespace std;
 
-void colorGraph(AdjacencyList *, int);
 void processGraphs(char*, int);
-bool isGraphColorable(AdjacencyList*, int);
-bool canReconstructGraph(AdjacencyList*, int);
 char* strpos(char*, char);
 
 /*
@@ -102,7 +99,7 @@ void processGraphs(char* graphFileName, int k)
 	#pragma omp parallel for
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
 	{
-		adjLists[i].setColorable(isGraphColorable(adjLists + i, k));
+		adjLists[i].computeColorability();
 	}
 
 	for (int i = 0; i < graphStartPtrs.size(); ++i)
@@ -110,86 +107,6 @@ void processGraphs(char* graphFileName, int k)
       cout << i+1 << ":\t" << (adjLists[i].isColorable() ? "Colorable" :
        "Uncolorable") << endl;
    }
-}
-
-bool isGraphColorable(AdjacencyList* adjList, int realRegisters)
-{
-   map<int, GraphNode*>* graphNodes = adjList->getAdjList();
-   GraphNode* node;
-   bool removedNode;
-   bool optimistic = false; // True if we should optimistically remove nodes
-   bool tookOptimistic = false; // True if we have removed a node optimistically
-   int interferences;
-
-   for (;;)
-   {
-      // The current graph is definitely colorable
-      if (graphNodes->size() <= realRegisters)
-      {
-         // If we haven't removed any nodes optimistically then
-         // we can definitely color the graph
-         if (!tookOptimistic)
-         {
-            //cout << *adjList << endl;
-            return true;
-         }
-         else
-         {
-            // Graph might be colorable, lets try to reconstruct it to find out
-            return canReconstructGraph(adjList, realRegisters);
-         }
-      }
-
-      removedNode = false;
-
-      for (map<int, GraphNode*>::iterator itr = graphNodes->begin();
-       itr != graphNodes->end(); itr++)
-      {
-         // Never touch real registers, we'll exit above if we're done
-         if ((*itr).first < 32)
-         {
-            continue;
-         }
-
-         node = (*itr).second;
-		 
-         interferences = node->getNumInterferences();
-
-         if (interferences < realRegisters ||
-          (optimistic && interferences == realRegisters))
-         {
-            adjList->removeNode((*itr).first);
-            removedNode = true;
-
-            if (optimistic)
-            {
-               tookOptimistic = true;
-               optimistic = false;
-               removedNode = true;
-
-               break;
-            }
-         }
-      }
-
-      // Couldn't find any optimistic candidates
-      if (optimistic)
-      {
-         return false;
-      }
-
-      // Didn't find one, lets look optimistically
-      if (!removedNode)
-      {
-         optimistic = true;
-      }
-   }
-}
-
-// Returns true if the graph was successfully colored during reconstruction
-bool canReconstructGraph(AdjacencyList* adjList, int realRegisters)
-{
-   return false;
 }
 
 char* strpos(char* haystack, char needle)
