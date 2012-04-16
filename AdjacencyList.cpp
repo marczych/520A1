@@ -173,7 +173,37 @@ void AdjacencyList::computeColorability()
 // Returns true if the graph was successfully colored during reconstruction
 bool AdjacencyList::canReconstructGraph()
 {
-   return false;
+   set<int>* adjNodes;
+   set<int> colors;
+   GraphNode* graphNode;
+
+   while (!removedNodes.empty())
+   {
+      graphNode = removedNodes.top();
+      removedNodes.pop();
+      adjNodes = graphNode->getAdjNodes();
+      colors = availableColors; // Make a copy of static colors list
+
+      for (set<int>::iterator adjItr = adjNodes->begin();
+       adjItr != adjNodes->end(); adjItr++)
+      {
+         colors.erase(getNode(*adjItr)->getColor());
+         addSingleEdge(*adjItr, graphNode->getNodeId());
+      }
+
+      if (colors.size() == 0)
+      {
+         return false;
+      }
+      else
+      {
+         graphNode->setColor(*(colors.begin()));
+         adjList.insert(pair<int, GraphNode*>(graphNode->getNodeId(),
+          graphNode));
+      }
+   }
+
+   return true;
 }
 
 AdjacencyList::~AdjacencyList()
