@@ -1,5 +1,13 @@
+/*
+* Chris Hoover
+* Marc Zych
+* CSC 520 (Spring 2012): Project 1
+*/
+
+
 #include <iostream>
 #include <vector>
+
 #include "GraphNode.h"
 
 using namespace std;

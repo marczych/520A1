@@ -1,3 +1,10 @@
+/*
+* Chris Hoover
+* Marc Zych
+* CSC 520 (Spring 2012): Project 1
+*/
+
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/mman.h>
@@ -13,10 +20,13 @@
 #include <fstream>
 #include <sstream>
 
-#include "GraphFileParser.h"
+#include "GraphNode.h"
+#include "AdjacencyList.h"
 
 using namespace std;
 
+void getGraphStartPtrs(char*, vector<char*>&, char*&);
+void createAdjLists(AdjacencyList*&, vector<char*>&, int, char*&);
 void processGraphs(char*, int);
 char* strpos(char*, char);
 void writeResultsToFile(int, bool[], int);
@@ -28,19 +38,16 @@ void writeResultsToFile(int, bool[], int);
 */
 int main(int argc, char** argv)
 {
-   int realRegisters = atoi(argv[1]);
-   GraphNode::realRegisters = realRegisters;
-   AdjacencyList::setRealRegisters(realRegisters);
-	GraphFileParser parser;
-	//AdjacencyList* adjLists = parser.parse_infile(argv[2], realRegisters);
-   //bool colorable;
+	int realRegisters = atoi(argv[1]);
+	GraphNode::realRegisters = realRegisters;
+	AdjacencyList::setRealRegisters(realRegisters);
 
 	processGraphs(argv[2], realRegisters);
 
 	return 0;
 }
 
-void processGraphs(char* graphFileName, int k)
+void getGraphStartPtrs(char* graphFileName, vector<char*>& graphStartPtrs, char*& eof)
 {
 	// open a file descriptor attached to the graph file
 	int fd = open(graphFileName, O_RDONLY);
@@ -50,12 +57,10 @@ void processGraphs(char* graphFileName, int k)
 	
 	// create the memory map
 	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
-   char* eof = map + size;
+	eof = map + size;
 
 	// look through the memory-mapped region for the start of graph descriptions.
 	// as soon as we find one, process that section.
-	//#pragma omp parallel for shared(map)
-	vector<char*> graphStartPtrs;
 	for (int i = 0; i < size; ++i)
 	{
 		if (map[i] == 'G')
@@ -63,11 +68,10 @@ void processGraphs(char* graphFileName, int k)
 			graphStartPtrs.push_back(map + i);
 		}
 	}
-	
-	const int numGraphs = graphStartPtrs.size();
-	cout << "Graph start pointers found." << endl;
-	
-	AdjacencyList* adjLists = new AdjacencyList[graphStartPtrs.size()];
+}
+
+void createAdjLists(AdjacencyList*& adjLists, vector<char*>& graphStartPtrs, int numGraphs, char*& eof)
+{
 	#pragma omp parallel for
 	for (int i = 0; i < numGraphs; ++i)
 	{
@@ -98,20 +102,6 @@ void processGraphs(char* graphFileName, int k)
 			}
 		}
 	}
-	
-	cout << "Adjacency lists created." << endl;
-	
-	bool results[numGraphs];
-	
-	//#pragma omp parallel for
-	for (int i = 0; i < numGraphs; ++i)
-	{
-		adjLists[i].computeColorability();
-		results[i] = adjLists[i].isColorable();
-	}
-	
-	// create output file
-	writeResultsToFile(k, results, numGraphs);
 }
 
 void writeResultsToFile(int k, bool results[], int numGraphs)
@@ -146,4 +136,26 @@ char* strpos(char* haystack, char needle)
    for (; *haystack != needle; haystack++);
 
    return haystack;
+}
+
+void processGraphs(char* graphFileName, int k)
+{
+	vector<char*> graphStartPtrs;
+	char* eof;
+	
+	getGraphStartPtrs(graphFileName, graphStartPtrs, eof);	
+	const int numGraphs = graphStartPtrs.size();
+	
+	AdjacencyList* adjLists = new AdjacencyList[graphStartPtrs.size()];
+	createAdjLists(adjLists, graphStartPtrs, numGraphs, eof);
+	
+	bool results[numGraphs];
+	
+	for (int i = 0; i < numGraphs; ++i)
+	{
+		adjLists[i].computeColorability();
+		results[i] = adjLists[i].isColorable();
+	}
+	
+	writeResultsToFile(k, results, numGraphs);
 }

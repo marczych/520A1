@@ -1,3 +1,10 @@
+/*
+* Chris Hoover
+* Marc Zych
+* CSC 520 (Spring 2012): Project 1
+*/
+
+
 #ifndef GRAPH_NODE_H
 #define GRAPH_NODE_H
 

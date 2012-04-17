@@ -1,8 +1,16 @@
+/*
+* Chris Hoover
+* Marc Zych
+* CSC 520 (Spring 2012): Project 1
+*/
+
+
 #ifndef ADJ_LIST_H
 #define ADJ_LIST_H
 
 #include <map>
 #include <stack>
+
 #include "GraphNode.h"
 
 using namespace std;
