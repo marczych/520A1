@@ -25,7 +25,7 @@
 
 using namespace std;
 
-void workOnGraph(char*, vector<bool>*);
+void workOnGraph(char*, bool*);
 void processGraphs(char*, int);
 char* strpos(char*, char);
 void writeResultsToFile(int, bool[], int);
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void workOnGraph(char* graph, vector<bool>* results)
+void workOnGraph(char* graph, bool* results)
 {
    AdjacencyList* adjList = new AdjacencyList();
    
@@ -75,7 +75,7 @@ void workOnGraph(char* graph, vector<bool>* results)
    }
 
    adjList->computeColorability();
-   //(*results)[graphNum] = adjList->isColorable();
+   results[graphNum] = adjList->isColorable();
 
    delete adjList;
 }
@@ -118,8 +118,7 @@ void processGraphs(char* graphFileName, int k)
 {
 	// open a file descriptor attached to the graph file
 	int fd = open(graphFileName, O_RDONLY);
-   vector<bool> results;
-   results.reserve(30000);
+   bool results[30000];
 
 	// get the file size
 	long size = lseek(fd, 0, SEEK_END);
@@ -134,21 +133,9 @@ void processGraphs(char* graphFileName, int k)
 	{
 		if (map[i] == 'G')
 		{
-         workOnGraph(map + i, &results);
+         workOnGraph(map + i, results);
 		}
 	}
 	
-   /*
-	createAdjLists(adjLists, graphStartPtrs, numGraphs, eof);
-	
-	bool results[numGraphs];
-	
-	for (int i = 0; i < numGraphs; ++i)
-	{
-		adjLists[i].computeColorability();
-		results[i] = adjLists[i].isColorable();
-	}
-	
-	writeResultsToFile(k, results, numGraphs);
-   */
+	writeResultsToFile(k, results, 27000);
 }
