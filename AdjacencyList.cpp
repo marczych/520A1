@@ -159,6 +159,8 @@ void AdjacencyList::computeColorability()
 
                break;
             }
+
+            break;
          }
       }
 

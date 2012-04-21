@@ -129,6 +129,7 @@ void processGraphs(char* graphFileName, int k)
 
 	// look through the memory-mapped region for the start of graph descriptions.
 	// as soon as we find one, process that section.
+   #pragma omp parallel for
 	for (int i = 0; i < size; ++i)
 	{
 		if (map[i] == 'G')
