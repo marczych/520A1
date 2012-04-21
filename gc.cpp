@@ -25,8 +25,7 @@
 
 using namespace std;
 
-void getGraphStartPtrs(char*, vector<char*>&, char*&);
-void createAdjLists(AdjacencyList*&, vector<char*>&, int, char*&);
+void workOnGraph(char*, vector<bool>*);
 void processGraphs(char*, int);
 char* strpos(char*, char);
 void writeResultsToFile(int, bool[], int);
@@ -47,61 +46,38 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-void getGraphStartPtrs(char* graphFileName, vector<char*>& graphStartPtrs, char*& eof)
+void workOnGraph(char* graph, vector<bool>* results)
 {
-	// open a file descriptor attached to the graph file
-	int fd = open(graphFileName, O_RDONLY);
-	
-	// get the file size
-	long size = lseek(fd, 0, SEEK_END);
-	
-	// create the memory map
-	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
-	eof = map + size;
+   AdjacencyList* adjList = new AdjacencyList();
+   
+   graph = strpos(graph, ' ') + 1; // Find graph number
+   char* endOfLine;
+   int graphNum = atoi(graph);
+   int nodeId;
 
-	// look through the memory-mapped region for the start of graph descriptions.
-	// as soon as we find one, process that section.
-	for (int i = 0; i < size; ++i)
-	{
-		if (map[i] == 'G')
-		{
-			graphStartPtrs.push_back(map + i);
-		}
-	}
-}
+   graph = strpos(graph, '\n') + 1;
+   graph = strpos(graph, '\n') + 1; // Skip the "K=XX" line
 
-void createAdjLists(AdjacencyList*& adjLists, vector<char*>& graphStartPtrs, int numGraphs, char*& eof)
-{
-	#pragma omp parallel for
-	for (int i = 0; i < numGraphs; ++i)
-	{
-		AdjacencyList* adjList = adjLists + i;
-		char* graph = graphStartPtrs[i];
-		
-		graph = strpos(graph, ' ') + 1; // Find graph number
-		char* endOfLine;
-		int graphNum = atoi(graph);
-		int nodeId;
+   // Reads in nodes and their neighboring nodes.
+   // Each iteration starts after a '\n'.
+   for (; *graph != 'G' && 
+    // '3<->32 2<->33' etc. signals end of graph
+    *(strpos(graph, '-') - 1) != '<'; graph++)
+   {
+      nodeId = atoi(graph);
+      graph = strpos(graph, '>') + 2; // Go to start of interferences
 
-		graph = strpos(graph, '\n') + 1;
-		graph = strpos(graph, '\n') + 1; // Skip the "K=XX" line
+      for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
+      graph = strpos(graph, ' ') + 1)
+      {
+         adjList->addEdge(nodeId, atoi(graph));
+      }
+   }
 
-		// Reads in nodes and their neighboring nodes.
-		// Each iteration starts after a '\n'.
-		for (; *graph != 'G' && graph < eof &&
-		// '3<->32 2<->33' etc. signals end of graph
-		*(strpos(graph, '-') - 1) != '<'; graph++)
-		{
-			nodeId = atoi(graph);
-			graph = strpos(graph, '>') + 2; // Go to start of interferences
+   adjList->computeColorability();
+   //(*results)[graphNum] = adjList->isColorable();
 
-			for (endOfLine = strpos(graph, '\n'); graph < endOfLine;
-			graph = strpos(graph, ' ') + 1)
-			{
-				adjList->addEdge(nodeId, atoi(graph));
-			}
-		}
-	}
+   delete adjList;
 }
 
 void writeResultsToFile(int k, bool results[], int numGraphs)
@@ -140,13 +116,28 @@ char* strpos(char* haystack, char needle)
 
 void processGraphs(char* graphFileName, int k)
 {
-	vector<char*> graphStartPtrs;
-	char* eof;
+	// open a file descriptor attached to the graph file
+	int fd = open(graphFileName, O_RDONLY);
+   vector<bool> results;
+   results.reserve(30000);
+
+	// get the file size
+	long size = lseek(fd, 0, SEEK_END);
 	
-	getGraphStartPtrs(graphFileName, graphStartPtrs, eof);	
-	const int numGraphs = graphStartPtrs.size();
+	// create the memory map
+	char* map = (char*) mmap(0, size, PROT_READ, MAP_SHARED, fd, 0);
+
+	// look through the memory-mapped region for the start of graph descriptions.
+	// as soon as we find one, process that section.
+	for (int i = 0; i < size; ++i)
+	{
+		if (map[i] == 'G')
+		{
+         workOnGraph(map + i, &results);
+		}
+	}
 	
-	AdjacencyList* adjLists = new AdjacencyList[graphStartPtrs.size()];
+   /*
 	createAdjLists(adjLists, graphStartPtrs, numGraphs, eof);
 	
 	bool results[numGraphs];
@@ -158,4 +149,5 @@ void processGraphs(char* graphFileName, int k)
 	}
 	
 	writeResultsToFile(k, results, numGraphs);
+   */
 }
