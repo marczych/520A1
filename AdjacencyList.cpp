@@ -33,6 +33,25 @@ AdjacencyList::AdjacencyList()
    colorable = false;
 }
 
+//Commented out because it makes it significantly slower
+AdjacencyList::~AdjacencyList()
+{
+
+   /*
+   for (map<int, GraphNode*>::iterator itr = adjList.begin();
+    itr != adjList.end(); itr++)
+   {
+      delete (*itr).second;
+   }
+
+   while (!removedNodes.empty())
+   {
+      delete removedNodes.top();
+      removedNodes.pop();
+   }
+   */
+}
+
 bool AdjacencyList::isColorable()
 {
    return colorable;
@@ -213,10 +232,6 @@ bool AdjacencyList::canReconstructGraph()
    }
 
    return true;
-}
-
-AdjacencyList::~AdjacencyList()
-{
 }
 
 ostream& operator<<(ostream& os, const AdjacencyList& adjList)
